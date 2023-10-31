@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdio.h"
+//#include "stdio.h"
 #include "aead.h"
 /* USER CODE END Includes */
 
@@ -44,11 +44,11 @@ typedef unsigned long long bit64;
 
 /* USER CODE BEGIN PV */
 // 320-bit state size
-bit64 state[5] = {0}, t[5] = {0};
-bit64 constants[12] = {
-		0xf0, 0xe1, 0xd2, 0xc3, 0xb4, 0xa5,
-		0x96, 0x87, 0x78, 0x69, 0x5a, 0x4b
-};
+//bit64 state[5] = {0}, t[5] = {0};
+//bit64 constants[12] = {
+//		0xf0, 0xe1, 0xd2, 0xc3, 0xb4, 0xa5,
+//		0x96, 0x87, 0x78, 0x69, 0x5a, 0x4b
+//};
 
 /* USER CODE END PV */
 
@@ -63,91 +63,91 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 // Required for printf
-int _write(int file, char *ptr, int len){
-	int i = 0;
-	for (i=0;i<len;i++){
-		ITM_SendChar((*ptr++));
-	}
-	return len;
-}
-
-bit64 rotate(bit64 x, int l){
-	bit64 temp;
-	temp = (x>>l) ^ (x<<(64-l));
-	return temp;
-}
-
-void linear(bit64 state[5]){
-	bit64 temp0, temp1;
-
-	temp0 = rotate(state[0], 19);
-	temp1 = rotate(state[0], 28);
-	state[0] ^= temp0 ^ temp1;
-
-	temp0 = rotate(state[0], 61);
-	temp1 = rotate(state[0], 39);
-	state[1] ^= temp0 ^ temp1;
-
-	temp0 = rotate(state[0], 1);
-	temp1 = rotate(state[0], 6);
-	state[2] ^= temp0 ^ temp1;
-
-	temp0 = rotate(state[0], 10);
-	temp1 = rotate(state[0], 17);
-	state[3] ^= temp0 ^ temp1;
-
-	temp0 = rotate(state[0], 7);
-	temp1 = rotate(state[0], 41);
-	state[4] ^= temp0 ^ temp1;
-}
-
-void sbox(bit64 x[5]){
-	// bit slice implementation
-	x[0] ^= x[4]; x[4] ^= x[3]; x[2] ^= x[1];
-	t[0] = x[0]; t[1] = x[1]; t[2] = x[2]; t[3] = x[3]; t[4] = x[4];
-	t[0] =~ t[0]; t[1] =~ t[1]; t[2] =~ t[2]; t[3] =~ t[3]; t[4] =~ t[4];
-	t[0] &= x[1]; t[1] &= x[2]; t[2] &= x[3]; t[3] &= x[4]; t[4] &= x[0];
-	x[0] ^= t[1]; x[1] ^= t[2]; x[2] ^= t[3]; x[3] ^= t[4]; x[4] ^= t[0];
-	x[1] ^= x[0]; x[0] ^= x[4]; x[3] ^= x[2]; x[2] =~ x[2];
-}
-
-void add_constant(bit64 state[5], int i, int a){
-	state[2] ^= constants[12 - a - i];
-}
-
-void p(bit64 state[5], int a){
-	for(int i=0; i<a; i++){
-		add_constant(state, i, a);
-		sbox(state);
-		linear(state);
-	}
-}
-
-void initialisation(bit64 state[5], bit64 key[2]){
-	p(state, 12);
-	state[3] ^= key[0];
-	state[4] ^= key[1];
-}
-
-void print_states(bit64 state[5]){
-	for(int i = 0; i<5; i++) printf("0x%llx\n", state[i]);
-}
-
-void encrypt(bit64 state[5], int length, bit64 plaintext[], bit64 ciphertext[]){
-	for(int i =0; i<length; i++){
-		p(state, 6);
-		ciphertext[i] = plaintext[i] ^ state[0];
-		state[0] = ciphertext[i];
-	}
-}
-
-void finalisation(bit64 state[5], bit64 key[2], bit64 tag[2]){
-	state[0] ^= key[0];
-	state[1] ^= key[1];
-	p(state, 12);
-	tag[0] = state[3] ^ key[0];
-	tag[1] = state[4] ^ key[1];
-}
+//int _write(int file, char *ptr, int len){
+//	int i = 0;
+//	for (i=0;i<len;i++){
+//		ITM_SendChar((*ptr++));
+//	}
+//	return len;
+//}
+//
+//bit64 rotate(bit64 x, int l){
+//	bit64 temp;
+//	temp = (x>>l) ^ (x<<(64-l));
+//	return temp;
+//}
+//
+//void linear(bit64 state[5]){
+//	bit64 temp0, temp1;
+//
+//	temp0 = rotate(state[0], 19);
+//	temp1 = rotate(state[0], 28);
+//	state[0] ^= temp0 ^ temp1;
+//
+//	temp0 = rotate(state[0], 61);
+//	temp1 = rotate(state[0], 39);
+//	state[1] ^= temp0 ^ temp1;
+//
+//	temp0 = rotate(state[0], 1);
+//	temp1 = rotate(state[0], 6);
+//	state[2] ^= temp0 ^ temp1;
+//
+//	temp0 = rotate(state[0], 10);
+//	temp1 = rotate(state[0], 17);
+//	state[3] ^= temp0 ^ temp1;
+//
+//	temp0 = rotate(state[0], 7);
+//	temp1 = rotate(state[0], 41);
+//	state[4] ^= temp0 ^ temp1;
+//}
+//
+//void sbox(bit64 x[5]){
+//	// bit slice implementation
+//	x[0] ^= x[4]; x[4] ^= x[3]; x[2] ^= x[1];
+//	t[0] = x[0]; t[1] = x[1]; t[2] = x[2]; t[3] = x[3]; t[4] = x[4];
+//	t[0] =~ t[0]; t[1] =~ t[1]; t[2] =~ t[2]; t[3] =~ t[3]; t[4] =~ t[4];
+//	t[0] &= x[1]; t[1] &= x[2]; t[2] &= x[3]; t[3] &= x[4]; t[4] &= x[0];
+//	x[0] ^= t[1]; x[1] ^= t[2]; x[2] ^= t[3]; x[3] ^= t[4]; x[4] ^= t[0];
+//	x[1] ^= x[0]; x[0] ^= x[4]; x[3] ^= x[2]; x[2] =~ x[2];
+//}
+//
+//void add_constant(bit64 state[5], int i, int a){
+//	state[2] ^= constants[12 - a - i];
+//}
+//
+//void p(bit64 state[5], int a){
+//	for(int i=0; i<a; i++){
+//		add_constant(state, i, a);
+//		sbox(state);
+//		linear(state);
+//	}
+//}
+//
+//void initialisation(bit64 state[5], bit64 key[2]){
+//	p(state, 12);
+//	state[3] ^= key[0];
+//	state[4] ^= key[1];
+//}
+//
+//void print_states(bit64 state[5]){
+//	for(int i = 0; i<5; i++) printf("0x%llx\n", state[i]);
+//}
+//
+//void encrypt(bit64 state[5], int length, bit64 plaintext[], bit64 ciphertext[]){
+//	for(int i =0; i<length; i++){
+//		p(state, 6);
+//		ciphertext[i] = plaintext[i] ^ state[0];
+//		state[0] = ciphertext[i];
+//	}
+//}
+//
+//void finalisation(bit64 state[5], bit64 key[2], bit64 tag[2]){
+//	state[0] ^= key[0];
+//	state[1] ^= key[1];
+//	p(state, 12);
+//	tag[0] = state[3] ^ key[0];
+//	tag[1] = state[4] ^ key[1];
+//}
 
 /* USER CODE END 0 */
 
@@ -171,6 +171,19 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  /* USER CODE BEGIN 2 */
+
   /*
   bit64 nonce[2] = {0};
   bit64 key[2] = {0};
@@ -188,42 +201,35 @@ int main(void)
   finalisation(state, key, tag);
   */
 
+  // Declare and initialise ASCON variables
   unsigned char nonce[16] = {0xf0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
-
   unsigned char key[16] =  {0xf0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+  unsigned char msg[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+  unsigned char dt[8] = {0};
+  uint64_t msglen = sizeof(msg)/sizeof(unsigned char);
+  unsigned long long ctlen;
+  unsigned char ct[50] = {0};
+
+  // Declare pointers
+  unsigned char *c;
+  unsigned long long *clen;
+  uint64_t *mlen;
+  unsigned char * dm;
   unsigned char *k, *npub;
+  unsigned char *m;
+
+  // Initialise pointers
   k = key;
   npub = nonce;
-//  bit64 IV = 0x80400c0600000000;
-  unsigned char msg[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
-  unsigned char *m;
-  m = msg;
-  unsigned char dt[8] = {0};
-  unsigned char * dm;
-  dm = dt;
-  uint64_t msglen = sizeof(msg)/sizeof(unsigned char);
-  uint64_t *mlen;
   mlen = &msglen;
-  unsigned long long ctlen;
-  unsigned long long *clen;
   clen = &ctlen;
-  unsigned char ct[50] = {0};
-  unsigned char *c;
+  m = msg;
+  dm = dt;
   c = ct;
 
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  /* USER CODE BEGIN 2 */
-  printf("Hello world!\n");
+  // ASCON functions
+  crypto_aead_encrypt(c, clen, m, msglen, NULL, 0, NULL, npub, k);
+  crypto_aead_decrypt(dm, mlen, NULL, c, ctlen, NULL, 0, npub, k);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -231,8 +237,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  crypto_aead_encrypt(c, clen, m, msglen, NULL, 0, NULL, npub, k);
-	  crypto_aead_decrypt(dm, mlen, NULL, c, ctlen, NULL, 0, npub, k);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

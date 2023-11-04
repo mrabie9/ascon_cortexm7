@@ -1,4 +1,4 @@
-#include "aead.h"
+#include <ASCON-128/aead.h>
 
 int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
                         const unsigned char* m, unsigned long long mlen,

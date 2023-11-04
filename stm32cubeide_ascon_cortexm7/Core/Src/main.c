@@ -17,12 +17,24 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+
+//#define VERSION 128
+
+#ifdef VERSION == version128
+#include <ASCON-128/aead.h>
+#define ENCRYPT(a,b,c,d,e,f,g,h,i) crypto_aead_encrypt(a,b,c,d,e,f,g,h,i)
+#define DECRYPT(a,b,c,d,e,f,g,h,i) crypto_aead_decrypt(a,b,c,d,e,f,g,h,i)
+#else
+#include <ASCON-128a/aead.h>
+#define ENCRYPT(a,b,c,d,e,f,g,h,i) crypto_aead_encrypta(a,b,c,d,e,f,g,h,i)
+#define DECRYPT(a,b,c,d,e,f,g,h,i) crypto_aead_decrypta(a,b,c,d,e,f,g,h,i)
+#endif
+
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 //#include "stdio.h"
-#include "aead.h"
 #include "string.h"
 /* USER CODE END Includes */
 
@@ -205,9 +217,17 @@ int main(void)
 //  volatile unsigned char mystack[500000] = {0xbe};
 //  for (int i = 0; i<500000; i++)
 //	  mystack[i]= 0xbe;
+
   volatile unsigned char nonce[16] = {0xf0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
   volatile unsigned char key[16] =  {0xf0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+#ifdef VERSION == 128
   volatile unsigned char msg[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+#else
+  volatile unsigned char msg[16] = {
+		  0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+		  0x1, 0x3, 0x5, 0x7, 0x9, 0xb, 0xd, 0xf
+  };
+#endif
   volatile unsigned char dt[8] = {0};
   volatile uint64_t msglen = sizeof(msg)/sizeof(unsigned char);
   volatile unsigned long long ctlen;
@@ -232,10 +252,11 @@ int main(void)
   HAL_TIM_Base_Start(&htim14);
   // ASCON functions
   timer_val = __HAL_TIM_GET_COUNTER(&htim14);
-  crypto_aead_encrypt(c, clen, m, msglen, NULL, 0, NULL, npub, k);
+  ENCRYPT(c, clen, m, msglen, NULL, 0, NULL, npub, k);
   timer_val = __HAL_TIM_GET_COUNTER(&htim14) - timer_val;
-  crypto_aead_decrypt(dm, mlen, NULL, c, ctlen, NULL, 0, npub, k);
+  DECRYPT(dm, mlen, NULL, c, ctlen, NULL, 0, npub, k);
   timer_val_d = __HAL_TIM_GET_COUNTER(&htim14) - timer_val;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

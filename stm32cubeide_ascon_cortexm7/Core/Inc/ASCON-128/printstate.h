@@ -3,8 +3,8 @@
 
 #ifdef ASCON_PRINT_STATE
 
-#include "ascon.h"
-#include "word.h"
+#include <ASCON-128/ascon.h>
+#include <ASCON-128/word.h>
 
 void printword(const char* text, const uint64_t x);
 void printstate(const char* text, const ascon_state_t* s);

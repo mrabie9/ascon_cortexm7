@@ -5,15 +5,14 @@
  *      Author: mdrab
  */
 
-#ifndef INC_AEAD_H_
-#define INC_AEAD_H_
+#ifndef INC_ASCON_128_AEAD_H_
+#define INC_ASCON_128_AEAD_H_
 
-#include "api.h"
-#include "ascon.h"
-//#include "crypto_aead.h"
-#include "permutations.h"
-#include "printstate.h"
-#include "word.h"
+#include <ASCON-128/api.h>
+#include <ASCON-128/ascon.h>
+#include <ASCON-128/permutations.h>
+#include <ASCON-128/printstate.h>
+#include <ASCON-128/word.h>
 
 
 int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
@@ -28,4 +27,4 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
                         unsigned long long adlen, const unsigned char* npub,
                         const unsigned char* k);
 
-#endif /* INC_AEAD_H_ */
+#endif /* INC_ASCON_128_AEAD_H_ */
